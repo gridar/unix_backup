@@ -36,7 +36,10 @@ function store() {
             rm $back_dir$file
           else
             #make a diff and store in in new backup
-            tar -C $back_dir -zxvf $back_dir$backup_init $file
+	    local tar_file=$(echo $backup_init | cut -d . -f 1)
+	    cp $back_dir$backup_init $backdir$tar_file".tar"
+            tar -C $back_dir -xvf $backdir$tar_file".tar" $file
+	    rm $backdir$tar_file".tar"
             local diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
             if [[ ! -z $diff_file ]]; then
               touch $back_dir$file".patch" #creation of patch file
@@ -59,13 +62,13 @@ function backup() {
   local directories=$(ls -l $src_directory | grep "^d" | awk '{print $9}')
 
   # skip comments and blank lines
-  find_arg=" -type f"
+  find_arg=" -maxdepth 1 -type f "
   read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
   for word in ${words[@]}; do
     find_arg+=" ! -name $word"
   done
 
-  find_arg+=" -maxdepth 1 -print "
+  find_arg+=" -print "
   files=$(find $src_directory $find_arg | sed 's/.*\///g')
 
   store $files

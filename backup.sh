@@ -18,13 +18,13 @@ function backup() {
   echo in $src_directory
 
   # skip comments and blank lines
-  find_arg=" -type f"
+  find_arg=" -maxdepth 1 -type f"
   read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
   for word in ${words[@]}; do
     find_arg+=" ! -name $word"
   done
 
-  find_arg+=" -maxdepth 1 -print "
+  find_arg+=" -print "
   files=$(find $src_directory $find_arg | sed 's/.*\///g')
 
   store $files
