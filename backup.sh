@@ -16,7 +16,8 @@ case $key in
     shift # past argument
     ;;
     *)
-      echo unknown option
+      echo invalid argument $1
+      exit 1
     ;;
 esac
 shift # past argument or value
