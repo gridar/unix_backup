@@ -1,1 +1,4 @@
-first commit
+Project Assignment 2015 : shell programming
+
+
+$ ./backup.sh -i backignore -d ./Documents
