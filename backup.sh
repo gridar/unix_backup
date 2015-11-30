@@ -1,26 +1,38 @@
-# Use > 0 to consume one or more arguments per pass in the loop (e.g.
-# some arguments don't have a corresponding value to go with it such
-# as in the --default example).
-# note: if this is set to > 0 the /etc/hosts part is not recognized ( may be a bug )
-while [[ $# > 1 ]]
-do
-key="$1"
+function store() {
+    printf '%q\n' "$@"
+    echo find "$@"
+    find $@
+}
 
-case $key in
-    -i)
-    FILE="$2"
-    shift # past argument
-    ;;
-    -d)
-    DIRECTORY="$2"
-    shift # past argument
-    ;;
-    *)
-      echo invalid argument $1
-      exit 1
-    ;;
-esac
-shift # past argument or value
+function backup() {
+  directory="$1"
+  backignore="$2"
+
+  # skip comments and blank lines
+  read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
+  for word in ${words[@]}; do
+    find_arg+=" ! -name ""$word"
+  done
+  find_arg+=" -print"
+  store "$directory" $find_arg
+}
+
+usage() {
+    echo "$(basename $0) [ -d directory ] [ -i ignorefile ]"
+    exit 1
+}
+
+directory=''
+backignore='.ignorefile'    # default
+
+while getopts "i:d:h" opt ; do
+  case "$opt" in
+    d)  directory="$OPTARG" ;;
+    i)  backignore="$OPTARG" ;;
+    *) usage ;;
+  esac
 done
-echo FILE = "${FILE}"
-echo DIRECTORY = "${DIRECTORY}"
+
+[ -z "$directory" ] && echo "Please provide a directory." && usage
+
+backup "$directory" "$backignore"
