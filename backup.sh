@@ -6,24 +6,20 @@ function store() {
 
 function backup() {
   local src_directory="$1"
-  local backignore="$2"
+  
+  echo i am in $src_directory
+  echo ${ignore[@]}
 
   local directories=$(ls -l $src_directory | grep "^d" | awk '{print $9}')
-  echo directories:
-  echo $directories
   
   local files=$(ls -l $src_directory | grep "^-" | awk '{print $9}')
   echo files:
   echo $files
 
-
   # files=grep raw_list
   # mkdir .backup
 
-    echo i am in $src_directory
   for directory in $directories; do
-    echo ,    go to
-    echo $src_directory/$directory
     backup "$src_directory/$directory" "$backignore"
   done
 
@@ -35,9 +31,6 @@ function backup() {
   # for word in ${words[@]}; do
   #   find_arg+=" ! -name "$word
   # done
-  # find_arg+=" -print"
-
-  #store "$directory" $find_arg
 }
 
 function usage() {
@@ -60,4 +53,5 @@ done
 
 [ -z "$directory" ] && echo "Please provide a directory." && usage
 
-backup "$directory" "$backignore"
+ignore=$(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
+backup "$directory"
