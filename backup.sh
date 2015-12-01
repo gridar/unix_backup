@@ -1,7 +1,7 @@
 function store() {
-    printf '%q\n' "$@"
+    printf '%q ' $@
     echo find "$@"
-    find $@
+    #find $@
 }
 
 function backup() {
@@ -11,7 +11,7 @@ function backup() {
   # skip comments and blank lines
   read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
   for word in ${words[@]}; do
-    find_arg+=" ! -name ""$word"
+    find_arg+=" ! -name '"$word"'"
   done
   find_arg+=" -print"
   store "$directory" $find_arg
