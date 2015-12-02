@@ -6,7 +6,7 @@ function store() {
 
 function backup() {
   local src_directory="$1"
-  
+
   echo i am in $src_directory
   echo ${ignore[@]}
 
