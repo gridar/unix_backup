@@ -6,18 +6,23 @@ function store() {
 
 function backup() {
   local src_directory="$1"
-  
-  echo i am in $src_directory
-  echo ${ignore[@]}
-
+  local find_arg=""
   local directories=$(ls -l $src_directory | grep "^d" | awk '{print $9}')
-  
-  local files=$(ls -l $src_directory | grep "^-" | awk '{print $9}')
-  echo files:
-  echo $files
 
-  # files=grep raw_list
-  # mkdir .backup
+  echo in $src_directory
+
+  # skip comments and blank lines
+  read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
+  for word in ${words[@]}; do
+    find_arg+=" ! -name $word"
+  done
+
+  find_arg+=" -print -maxdepth 1 -type f"
+  find_arg="$src_directory" -type f
+  echo $find_arg
+  find "$find_arg"
+  echo ""
+
 
   for directory in $directories; do
     backup "$src_directory/$directory" "$backignore"
