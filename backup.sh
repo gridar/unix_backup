@@ -23,14 +23,14 @@ function backup() {
 
   find_arg+=" -maxdepth 1 -print "
   files=$(find $src_directory $find_arg)
-
+   
+  store $files
+  echo ""
 
   for directory in $directories; do
     backup "$src_directory/$directory" "$backignore"
   done
-  
-  store $files
-  echo ""
+
 
 
   # # skip comments and blank lines
