@@ -4,7 +4,7 @@ function store() {
     echo $src_directory
     mkdir "$src_directory"/.backup
     #rm "$src_directory"/.backup/backup.tar.gz
-    tar -czf "$src_directory"/.backup/backup.tar.gz "$files_list"
+    tar -czf "$src_directory"/.backup/backup.tar.gz $files_list
 }
 
 function backup() {
@@ -23,7 +23,7 @@ function backup() {
 
   find_arg+=" -maxdepth 1 -print "
   files=$(find $src_directory $find_arg)
-   
+
   store $files
   echo ""
 
