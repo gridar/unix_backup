@@ -1,7 +1,10 @@
 function store() {
-    files_list="$(find $@)"
+    files_list=$@
     echo $files_list
-    tar -czf backup.tar.gz $files_list
+    echo $src_directory
+    mkdir "$src_directory"/.backup
+    #rm "$src_directory"/.backup/backup.tar.gz
+    tar -czf "$src_directory"/.backup/backup.tar.gz "$files_list"
 }
 
 function backup() {
@@ -19,16 +22,15 @@ function backup() {
   done
 
   find_arg+=" -maxdepth 1 -print "
-  echo $find_arg
-  find $src_directory $find_arg
-  echo ""
+  files=$(find $src_directory $find_arg)
 
 
   for directory in $directories; do
     backup "$src_directory/$directory" "$backignore"
   done
-
-  #store files
+  
+  store $files
+  echo ""
 
 
   # # skip comments and blank lines
