@@ -6,7 +6,6 @@ backup_init="backup_init.tar"
 
 function store() {
     local files_list=$@
-    echo $src_directory
     pushd $src_directory
 
     #creation of .backup if doesn't exist
@@ -15,38 +14,46 @@ function store() {
     fi
 
     if ! [ -f .backup/$backup_init.gz ]; then
-      tar -czf .backup/$backup_init.gz $files_list
+      
+      if ! [ -z $files_list ]; then
+        tar -czf .backup/$backup_init.gz $files_list
+      fi
+    
     else
       local txt_files=$(file -0 $files_list | sed -n '/text/p' | awk '{print $1}')
       local bin_files=$(file -0 $files_list | sed '/text/d' | awk '{print $1}')
 
-      #push binary file in new backup
-      if ! [ -f .backup/$backup_name.gz ]; then
+      # Archive binary files in new backup if any
+      if ! [ -z $bin_files ]; then
+        echo Archiving bin files $bin_files
         tar -czf .backup/$backup_name.gz $bin_files
       fi
 
+      # Unzip tar files
       gunzip .backup/$backup_init.gz
       gunzip .backup/$backup_name.gz
 
+      # Archive text files
       for txt in $txt_files; do
-        local already_exist=$(tar -ztf .backup/$backup_init.gz | grep $txt)
-        echo -----
-        echo exist : $already_exist
+        
+        local is_file_exist=$(tar -tf .backup/$backup_init | grep $txt)
+        echo $is_file_exist
+        if [ -z $is_file_exist ]; then
 
-        if [ -z $already_exist ]; then
-          echo ----
-          echo try to add: $txt
-          echo ---
+          # Add file in backup_init then add empty file in current backup
           tar -rf .backup/$backup_init $txt
           touch .backup/$txt
           tar -rf .backup/$backup_name .backup/$txt
           rm .backup/$txt
+
         else
           echo "check diff"
           #check diff
         fi
       done
+
       gzip .backup/$backup_init
+      gzip .backup/$backup_name
       #check diff of text file if exist in init backup push diff in new backup if not push text in init and empty file in new backup
     fi
     popd
