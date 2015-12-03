@@ -1,8 +1,12 @@
 datetime=$(data +%s)
 host=$(hostname)
-name_backup="backup_"$datetime_$host
+name_backup="backup_"$datetime_$host.tar.gz
+backup_init="backup_init.tar.gz"
 
 
+function check_diff() {
+
+}
 
 function store() {
     files_list=$@
@@ -10,9 +14,36 @@ function store() {
     echo $files_list
     echo $src_directory
     $(pushd $src_directory)
-    mkdir .backup
+
+    #creation of .backup if doesn't exist
+    if ! [ -d ".backup" ];then
+      mkdir .backup
+    fi
+
+    if ! [ -f .backup/$backup_init]; then
+      tar -czf .backup/$backup_init $files_list
+    else
+      txt_file=$(file -0 $files_list | sed -n '/text/p' | awk '{print $1}')
+      bin_file=$(file -0 $files_list | sed '/text/d' | awk '{print $1}')
+
+      #push binary file in new backup
+
+      #check diff of text file if exist in init backup push diff in new backup if not push text in init and empty file in new backup
+
+
+    fi
+
+    #file -0 * | sed '/text/d' | awk '{print $1}'
+    #if ! [ -f .backup/$name_backup.tar.gz ];then
+    #  tar -czf .backup/$name_backup $files_list
+    #else
+    #  tar -rzf .backup/$name_backup.tar.gz $files_list
+    #fi
+
+
+
     #rm "$src_directory"/.backup/backup.tar.gz
-    tar -czf  .backup/backup.tar.gz $files_list
+
     $(popd)
 }
 
