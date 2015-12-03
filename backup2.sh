@@ -14,11 +14,11 @@ function store() {
     fi
 
     if ! [ -f .backup/$backup_init.gz ]; then
-      
+
       if ! [ -z $files_list ]; then
         tar -czf .backup/$backup_init.gz $files_list
       fi
-    
+
     else
       local txt_files=$(file -0 $files_list | sed -n '/text/p' | awk '{print $1}')
       local bin_files=$(file -0 $files_list | sed '/text/d' | awk '{print $1}')
@@ -35,7 +35,7 @@ function store() {
 
       # Archive text files
       for txt in $txt_files; do
-        
+
         local is_file_exist=$(tar -tf .backup/$backup_init | grep $txt)
         echo $is_file_exist
         if [ -z $is_file_exist ]; then
