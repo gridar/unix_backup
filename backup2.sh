@@ -23,6 +23,7 @@ function store() {
       local txt_files=$(file -0 $files_list | sed -n '/text/p' | awk '{print $1}')
       local bin_files=$(file -0 $files_list | sed '/text/d' | awk '{print $1}')
 
+      tar -czf backup_name.gz /dev/null
       # Archive binary files in new backup if any
       if ! [ -z $bin_files ]; then
         echo Archiving bin files $bin_files
@@ -30,6 +31,7 @@ function store() {
       fi
 
       # Unzip tar files
+
       gunzip .backup/$backup_init.gz
       gunzip .backup/$backup_name.gz
 
@@ -51,7 +53,7 @@ function store() {
           #check diff
         fi
       done
-
+      
       gzip .backup/$backup_init
       gzip .backup/$backup_name
       #check diff of text file if exist in init backup push diff in new backup if not push text in init and empty file in new backup
