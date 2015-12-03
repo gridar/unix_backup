@@ -36,7 +36,7 @@ function store() {
             rm $back_dir$file
           else
             tar -C $back_dir -zxvf $back_dir$backup_init $file
-            diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
+            local diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
             if [[ ! -z $diff_file ]]; then
               echo $diff_file > $back_dir$file
               tar --append -C $back_dir --file=$back_dir$backup_name $file
@@ -44,10 +44,8 @@ function store() {
             rm $back_dir$file
           fi
         fi
-
       done
     fi
-
 }
 
 
