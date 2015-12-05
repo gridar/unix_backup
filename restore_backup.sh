@@ -3,9 +3,8 @@ backup_init="backup_init.tar.gz"
 
 function restore()
 {
-  local output_dir=$2
-  local back_dir=$(dirname $1)
-
+  local output_dir=${2-./}
+  local back_dir=$(dirname ${1-./})
   local path_archive_file=$1
   local path_init_file=$back_dir"/"$backup_init
 
@@ -14,11 +13,12 @@ function restore()
     echo "Archive file doesn't exist"
     exit 0
   fi
-  
+
   if [[ ! -d $output_dir ]]; then
     echo "Output directory doesn't exist"
     exit 0
   fi
+
 
   if [[ ! -d $output_dir"/restore" ]]; then
     mkdir $output_dir"/restore"
