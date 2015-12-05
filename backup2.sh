@@ -23,7 +23,7 @@ function store() {
 
       for file in $files_list; do
         if [[ -z $(file -0 $src_directory"/"$file | sed -n '/text/p') ]]; then
-           #if it is not a text file
+           #if it is a bin file
            tar --append -C $src_directory --file=$back_dir$backup_name $file
         else
           #if it is a text file
