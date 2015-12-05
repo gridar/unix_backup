@@ -18,7 +18,7 @@ function restore()
 
     local files=$(find $output_dir"/.restore" -type f -maxdepth 1 -print | sed 's/.*\///g')
 
-    if [[  $path_archive_file != $path_init_file ]]; then
+    if [[  $path_archive_file != $path_init_file ]]; then #if backup != init_backup
 
       if [[ ! -d $output_dir"/.init" ]]; then
         mkdir $output_dir"/.init"
@@ -31,6 +31,7 @@ function restore()
           #binary file
           mv $output_dir"/.restore/"$file $output_dir"/"$file
         else
+
           if [[ -f $output_dir"/.init/"$file ]]; then
             local patch_file=$(echo $file | cut -d . -f1)
             mv $output_dir"/.restore/"$file $output_dir"/"$patch_file.patch
