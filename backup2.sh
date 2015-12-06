@@ -29,16 +29,19 @@ function store() {
           #if it is a text file
 
           local is_file_exist=$(tar -tf $back_dir$backup_init $file)
-          if [[ -z $is_file_exist ]]; then #file not present in backup_init
+          if [[ -z $is_file_exist ]]; then 
+            #file not present in backup_init
+            #we add it to backup_init
             tar --append -C $src_directory --file=$back_dir$backup_init $file
             touch $back_dir$file
             tar --append -C $back_dir --file=$back_dir$backup_name $file
             rm $back_dir$file
           else
+            #make a diff and store in in new backup
             tar -C $back_dir -zxvf $back_dir$backup_init $file
             local diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
             if [[ ! -z $diff_file ]]; then
-              echo $diff_file > $back_dir$file
+              diff -u $src_directory"/"$file $back_dir$file > $back_dir$file
               tar --append -C $back_dir --file=$back_dir$backup_name $file
             fi
             rm $back_dir$file
