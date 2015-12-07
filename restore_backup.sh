@@ -22,7 +22,7 @@ function restore()
     mkdir $output_dir"/restore"
   fi
 
-  
+  tar -C $output_dir"/restore"  -zxvf $path_init_file
   tar -C $output_dir"/restore"  -zxvf $path_archive_file
 
   local files=$(find $output_dir"/restore" -type f -maxdepth 1 -print | sed 's/.*\///g')
@@ -32,21 +32,16 @@ function restore()
 
   for file in $files; do
     if [[ ! -z $(file -0 $output_dir"/restore/"$file | sed -n '/text/p') ]]; then
-      #if it is not a bin file
+      patch_datas=$(grep '^--- ' $output_dir"/restore/"$file)
       
-      echo $file is not a bin file
-
-    fi
-
-    patch_datas=$(grep '^--- ' $output_dir"/restore/"$file)
-    
-    if [[ ! -z $patch_datas ]]; then
-      echo find a patch file
-      local patch_file=$file
-      tar -zxvf $BACKUP_INIT_FILE_NAME $file
-      patch -t --no-backup-if-mismatch $file ./restore/$file
-      rm ./restore/$file
-      mv $file ./restore
+      if [[ ! -z $patch_datas ]]; then
+        echo find a patch file
+        local patch_file=$file
+        tar -zxvf $BACKUP_INIT_FILE_NAME $file
+        patch -t --no-backup-if-mismatch $file ./restore/$file
+        rm ./restore/$file
+        mv $file ./restore
+      fi
     fi
   done  
 
