@@ -30,26 +30,25 @@ function restore()
   echo files
   echo $files
 
+  for file in $files; do
+    if [[ ! -z $(file -0 $output_dir"/restore/"$file | sed -n '/text/p') ]]; then
+      #if it is not a bin file
+      
+      echo $file is not a bin file
 
-#to do for each files 
-  local file="file3.txt"
-  if [[ -z $(file -0 $output_dir"/restore/"$file | sed -n '/text/p') ]]; then
-    #if it is not a bin file
-    echo whouhouhouh
-  fi
+    fi
 
-  patch_datas=$(grep '^--- ' $output_dir"/restore/"$file)
-  
-  if [[ ! -z $patch_datas ]]; then
-    echo find a patch file
-    local patch_file=$file
-
-    #unzip initial file in BACKUP_INIT_FILE_NAME
-    #make patch
-    #delete patch file
-    #done
-  fi
-  
+    patch_datas=$(grep '^--- ' $output_dir"/restore/"$file)
+    
+    if [[ ! -z $patch_datas ]]; then
+      echo find a patch file
+      local patch_file=$file
+      tar -zxvf $BACKUP_INIT_FILE_NAME $file
+      patch -t --no-backup-if-mismatch $file ./restore/$file
+      rm ./restore/$file
+      mv $file ./restore
+    fi
+  done  
 
 }
 
