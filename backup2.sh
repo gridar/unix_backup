@@ -14,22 +14,20 @@ function store() {
       mkdir $src_directory"/.backup/"
     fi
 
-    if [[ ! -f $back_dir$backup_init ]]; then
+    if [[ ! -f $back_dir$backup_init ]]; then #if backup_init doesn't exist
       if [[ ! -z $files_list ]]; then
-        tar --append -C $src_directory --file=$back_dir$backup_init $files_list
-        #tar -czf .backup/$backup_init.gz $files_list
+        tar --append -C $src_directory --file=$back_dir$backup_init $files_list #we create backup_init.tar.gz
       fi
     else
-
       for file in $files_list; do
-        if [[ -z $(file -0 $src_directory"/"$file | sed -n '/text/p') ]]; then
+        if [[ -z $(file -0 $src_directory"/"$file | sed -n '/text/p') ]]; then #We check if the file is not a text file
            #if it is a bin file
            tar --append -C $src_directory --file=$back_dir$backup_name $file
         else
           #if it is a text file
 
-          local is_file_exist=$(tar -tf $back_dir$backup_init $file)
-          if [[ -z $is_file_exist ]]; then 
+          local is_file_exist=$(tar -tf $back_dir$backup_init $file) #Get specific file of tar.gz
+          if [[ -z $is_file_exist ]]; then
             #file not present in backup_init
             #we add it to backup_init
             tar --append -C $src_directory --file=$back_dir$backup_init $file
@@ -41,7 +39,7 @@ function store() {
             tar -C $back_dir -zxvf $back_dir$backup_init $file
             local diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
             if [[ ! -z $diff_file ]]; then
-              touch $back_dir$file".patch"
+              touch $back_dir$file".patch" #creation of patch file
               diff -u $src_directory"/"$file $back_dir$file > $back_dir$file".patch"
               rm $back_dir$file
               mv $back_dir$file".patch" $back_dir$file
@@ -71,19 +69,10 @@ function backup() {
   files=$(find $src_directory $find_arg | sed 's/.*\///g')
 
   store $files
-  echo ""
 
   for directory in $directories; do
     backup "$src_directory/$directory" "$backignore"
   done
-
-
-
-  # # skip comments and blank lines
-  # read -ra words <<< $(sed -e 's/#.*// ; /^[[:space:]]*$/d' "$backignore")
-  # for word in ${words[@]}; do
-  #   find_arg+=" ! -name "$word
-  # done
 }
 
 function usage() {
