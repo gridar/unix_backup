@@ -37,10 +37,10 @@ function restore()
       if [[ ! -z $patch_datas ]]; then
         echo find a patch file
         local patch_file=$file
-        tar -zxvf $BACKUP_INIT_FILE_NAME $file
-        patch -t --no-backup-if-mismatch $file ./restore/$file
-        rm ./restore/$file
-        mv $file ./restore
+        tar -zxvf $path_init_file $file
+        patch -t --no-backup-if-mismatch $file $output_dir"/restore/"$file
+        rm $output_dir"/restore/"$file
+        mv $file $output_dir"/restore"
       fi
     fi
   done  

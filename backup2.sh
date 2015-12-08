@@ -41,7 +41,10 @@ function store() {
             tar -C $back_dir -zxvf $back_dir$backup_init $file
             local diff_file=$(diff -u $src_directory"/"$file $back_dir$file)
             if [[ ! -z $diff_file ]]; then
-              diff -u $src_directory"/"$file $back_dir$file > $back_dir$file
+              touch $back_dir$file".patch"
+              diff -u $src_directory"/"$file $back_dir$file > $back_dir$file".patch"
+              rm $back_dir$file
+              mv $back_dir$file".patch" $back_dir$file
               tar --append -C $back_dir --file=$back_dir$backup_name $file
             fi
             rm $back_dir$file
