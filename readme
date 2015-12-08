@@ -1,4 +1,6 @@
 Project Assignment 2015 : shell programming
 
 
-$ ./backup.sh -i backignore -d ./Documents
+Part 1) $ ./backup.sh -i backignore -d /directory
+Part 2) $ ./backup2.sh -i backignore -d /directory
+Part 3) $ ./restore_backup.sh backup_name /output_directory (optional)
