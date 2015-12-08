@@ -22,24 +22,26 @@ function restore()
     mkdir $output_dir"/restore"
   fi
 
+  # Un archive all initial files
   tar -C $output_dir"/restore"  -zxvf $path_init_file
+  # Un archive all patches and binaries
   tar -C $output_dir"/restore"  -zxvf $path_archive_file
 
   local files=$(find $output_dir"/restore" -type f -maxdepth 1 -print | sed 's/.*\///g')
-  
-  echo files
-  echo $files
 
-  for file in $files; do
+  for file in $files; do #for all files
+    # if it's a text file
     if [[ ! -z $(file -0 $output_dir"/restore/"$file | sed -n '/text/p') ]]; then
       patch_datas=$(grep '^--- ' $output_dir"/restore/"$file)
-      
+      #if it's a patch file
       if [[ ! -z $patch_datas ]]; then
-        echo find a patch file
+        # Then find the init file and patch it
         local patch_file=$file
         tar -zxvf $path_init_file $file
         patch -t --no-backup-if-mismatch $file $output_dir"/restore/"$file
+        # remove patch file
         rm $output_dir"/restore/"$file
+        # add patched file to restore directory
         mv $file $output_dir"/restore"
       fi
     fi
